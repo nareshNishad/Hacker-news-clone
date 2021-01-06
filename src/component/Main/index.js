@@ -123,7 +123,6 @@ function Main() {
       url = `https://hn.algolia.com/api/v1/${sortValue}?query=${userInput}&page=${page}&tags=${type}&numericFilters=created_at_i>${date}`;
     }
     axios.get(url).then((data) => {
-      console.log(data);
       setResult(data.data.hits);
       let temp = {
         number: data.data.nbHits,

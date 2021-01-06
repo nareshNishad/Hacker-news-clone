@@ -17,7 +17,7 @@ function Login() {
   const handleSubmit = ({ email, password }) => {
     setLoginFailed(false);
     const requestBody = {
-      query: `query {login( email: "${email}", password: "${password}") { userId } }`,
+      query: `query {login( email: "${email}", password: "${password}") { name } }`,
     };
 
     fetch("https://login-setup.herokuapp.com/graphql", {
@@ -39,9 +39,8 @@ function Login() {
         if (resData.errors) {
           return setLoginFailed(true);
         }
-        sessionStorage.setItem("user", resData.data.login.userId);
+        sessionStorage.setItem("user", resData.data.login.name);
         history.push("/");
-        console.log({ resData });
       })
       .catch((err) => {
         console.log(err);
@@ -55,10 +54,6 @@ function Login() {
         onSubmit={handleSubmit}
         validationSchema={validationSchema}
       >
-        <ErrorMessage
-          error="Invalid email and/or password."
-          visible={loginFailed}
-        />
         <div
           style={{
             display: "flex",
@@ -71,6 +66,10 @@ function Login() {
           <h4>Sign In</h4>
           <FormField name="email" placeholder="Email" />
           <FormField name="password" placeholder="Password" type="password" />
+          <ErrorMessage
+            error="Invalid email and/or password."
+            visible={loginFailed}
+          />
           <SubmitButton
             title="Login"
             customStyle={{ backgroundColor: "#ff742b" }}

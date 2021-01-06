@@ -11,8 +11,7 @@ function AccountPane() {
       <img alt="account" src={accountPic} className="dropbtn" />
 
       <div class="dropdown-content">
-        <Link to="/login">Login</Link>
-        {sessionStorage.getItem("user") && (
+        {sessionStorage.getItem("user") ? (
           <Link
             onClick={() => {
               sessionStorage.removeItem("user");
@@ -21,6 +20,8 @@ function AccountPane() {
           >
             Logout
           </Link>
+        ) : (
+          <Link to="/login">Login</Link>
         )}
         <Link to="/register">Register</Link>
       </div>
