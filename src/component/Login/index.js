@@ -17,7 +17,7 @@ function Login() {
   const handleSubmit = ({ email, password }) => {
     setLoginFailed(false);
     const requestBody = {
-      query: `query {login( email: "${email}", password: "${password}") { userId, token} }`,
+      query: `query {login( email: "${email}", password: "${password}") { userId } }`,
     };
 
     fetch("https://login-setup.herokuapp.com/graphql", {
@@ -39,6 +39,7 @@ function Login() {
         if (resData.errors) {
           return setLoginFailed(true);
         }
+        sessionStorage.setItem("user", resData.data.login.userId);
         history.push("/");
         console.log({ resData });
       })
