@@ -1,4 +1,9 @@
-import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
+import {
+  Route,
+  BrowserRouter as Router,
+  Switch,
+  Redirect,
+} from "react-router-dom";
 
 import style from "./App.module.css";
 import Main from "./component/Main";
@@ -12,9 +17,6 @@ const setting = {
   page: 0,
 };
 function App() {
-  if (window.location.pathname === "/")
-    window.location.href = `/query=${setting.query}/sort=${setting.sort}/page=${setting.page}/dateRange=${setting.dateRange}/type=${setting.type}`;
-
   return (
     <div className={style.app}>
       <div className={style.container}>
@@ -28,6 +30,9 @@ function App() {
             </Route>
             <Route exact path="/login" component={Login} />
             <Route exact path="/register" component={Register} />
+            <Redirect
+              to={`/query=${setting.query}/sort=${setting.sort}/page=${setting.page}/dateRange=${setting.dateRange}/type=${setting.type}`}
+            />
           </Switch>
         </Router>
       </div>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import * as Yup from "yup";
+import { useHistory } from "react-router-dom";
 
 import { ErrorMessage, Form, FormField, SubmitButton } from "../forms";
 import Header from "../Header";
@@ -11,9 +12,39 @@ const validationSchema = Yup.object().shape({
 
 function Login() {
   const [loginFailed, setLoginFailed] = useState(false);
+  const history = useHistory();
 
   const handleSubmit = ({ email, password }) => {
-    console.log({ email, password });
+    setLoginFailed(false);
+    const requestBody = {
+      query: `query {login( email: "${email}", password: "${password}") { userId, token} }`,
+    };
+
+    fetch("https://login-setup.herokuapp.com/graphql", {
+      method: "POST",
+      body: JSON.stringify(requestBody),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => {
+        console.log({ res });
+        if (res.status !== 200 && res.status !== 201) {
+          setLoginFailed(true);
+          throw new Error("Failed!");
+        }
+        return res.json();
+      })
+      .then((resData) => {
+        if (resData.errors) {
+          return setLoginFailed(true);
+        }
+        history.push("/");
+        console.log({ resData });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
   return (
     <div>
@@ -38,7 +69,7 @@ function Login() {
         >
           <h4>Sign In</h4>
           <FormField name="email" placeholder="Email" />
-          <FormField name="password" placeholder="Password" />
+          <FormField name="password" placeholder="Password" type="password" />
           <SubmitButton
             title="Login"
             customStyle={{ backgroundColor: "#ff742b" }}

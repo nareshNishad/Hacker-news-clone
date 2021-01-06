@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import * as Yup from "yup";
+import { useHistory } from "react-router-dom";
 
 import { ErrorMessage, Form, FormField, SubmitButton } from "../forms";
 import Header from "../Header";
@@ -12,8 +13,37 @@ const validationSchema = Yup.object().shape({
 
 function Register() {
   const [error, setError] = useState();
-  const handleSubmit = ({ email, password }) => {
-    console.log({ email, password });
+  const history = useHistory();
+
+  const handleSubmit = ({ name, email, password }) => {
+    const requestBody = {
+      query: `mutation {createUser(userInput: {name: "${name}" , email: "${email}", password: "${password}"}) { name }}`,
+    };
+
+    fetch("https://login-setup.herokuapp.com/graphql", {
+      method: "POST",
+      body: JSON.stringify(requestBody),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => {
+        if (res.status !== 200 && res.status !== 201) {
+          throw new Error("Failed!");
+        }
+        return res.json();
+      })
+      .then((resData) => {
+        if (resData.errors) {
+          return setError(resData.errors[0].message);
+        }
+        sessionStorage.setItem("user", resData.data.createUser.name);
+        history.push("/");
+        console.log({ resData });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
   return (
     <div>
@@ -23,7 +53,6 @@ function Register() {
         onSubmit={handleSubmit}
         validationSchema={validationSchema}
       >
-        <ErrorMessage error={error} visible={error} />
         <div
           style={{
             display: "flex",
@@ -36,7 +65,8 @@ function Register() {
           <h4>Sign Up</h4>
           <FormField name="name" placeholder="Name" />
           <FormField name="email" placeholder="Email" />
-          <FormField name="password" placeholder="Password" />
+          <FormField name="password" placeholder="Password" type="password" />
+          <ErrorMessage error={error} visible={error} />
 
           <SubmitButton
             title="Register"
