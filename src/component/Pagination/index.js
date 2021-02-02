@@ -3,8 +3,8 @@ import ButtonCard from "./ButtonCard";
 import "./Pagination.css";
 
 function Pagination({ initialPage, setPage, totalPage }) {
-  const onClickHandle = (event) => {
-    setPage(event.target.value - 1);
+  const onClickHandle = (event, i) => {
+    setPage(i);
   };
 
   const onClickForward = () => {
@@ -94,13 +94,16 @@ function Pagination({ initialPage, setPage, totalPage }) {
   };
 
   const PagiN = ({ buttons }) => {
+    {
+      console.log(buttons);
+    }
     const pageComponent = buttons.map((button, i) => (
       <ButtonCard
         key={i}
         value={button.value}
         isActive={button.isActive}
         isDisabled={button.isDisabled}
-        onClick={button.onClick}
+        onClick={(e) => button.onClick(e, i)}
       />
     ));
     return <ul className="search-pagination">{pageComponent}</ul>;
